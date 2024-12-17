@@ -309,3 +309,12 @@ Membuat permission menu
 Menambahkan role ke register
 
     $user->assignRole('user');
+
+Pertemuan 5
+Memecah Layout
+
+// tambahkan view di
+
+    resources/views/layouts/partials/footer.blade.php
+    resources/views/layouts/partials/navbar.blade.php
+    resources/views/layouts/partials/sidebar.blade.php
