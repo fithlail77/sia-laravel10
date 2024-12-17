@@ -223,3 +223,89 @@ composer require laravel/ui
     php artisan migrate
 
 https://github.com/aleckrh/laravel-sb-admin-2
+
+Pertemuan 4
+Menambahkan role permission
+
+    composer require spatie/laravel-permission
+
+    php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+
+Menambahkan spatie ke model User
+
+    use Spatie\Permission\Traits\HasRoles;
+
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+
+Membuat Role Seeder
+
+    php artisan make:seeder RoleSeeder
+
+// Update File database/seeder/RoleSeeder.php
+
+    use Spatie\Permission\Models\Role;
+
+    Role::create([
+    'name' => 'admin',
+    'guard_name' => 'web'
+    ]);
+
+    Role::create([
+    'name' => 'user',
+    'guard_name' => 'web'
+    ]);
+
+Membuat User Seeder
+
+    php artisan make:seeder UserSeeder
+
+// Update File database/seeder/UserSeeder.php
+
+    use App\Models\User;
+
+    $admin = User::create([
+        'name' => 'admin',
+        'email' => 'admin@test.com',
+        'password' => bcrypt('password'),
+    ]);
+    $admin->assignRole('admin');
+
+    $user = User::create([
+        'name' => 'user',
+        'email' => 'user@test.com',
+        'password' => bcrypt('password'),
+    ]);
+    $user->assignRole('user');
+
+Membuat Database Seeder
+// Update File database/seeder/databaseSeeder.php
+
+    use Database\Seeders\RoleSeeder;
+    use Database\Seeders\UserSeeder;
+
+    $this->call(RoleSeeder::class);
+    $this->call(UserSeeder::class);
+
+jalankan perintah migration dan seeder
+
+    php artisan migrate:fresh --seed
+
+Membuat Middleware
+update file app/Http/Kernel.php
+
+    protected $middlewareAliases = [
+    'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+    'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+    'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+    ];
+
+Membuat permission menu
+//Update file admin.blade.php -> menu Profile
+
+    @role('admin')
+    //isi menu
+    @endrole
+
+Menambahkan role ke register
+
+    $user->assignRole('user');
